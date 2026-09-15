@@ -22,33 +22,45 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Accept Android Licenses
-        run: yes | sdkmanager --licenses || true
-
       - name: Setup Gradle Build Environment
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.2'
 
-      - name: Prepare Project Structure, Fix Layout XML & Attributes
+      - name: Prepare Project Structure, Fix Kotlin Code & Layout XML
         run: |
           rm -f preview.html || true
 
-          # تصحيح خطأ android:dir وحذف أي أخطاء وسمية في activity_main.xml
+          # تصحيح استيرادات Kotlin المفقودة وحل غموض setView في ملفات الـ kt
+          find app/src/main/java -name "*.kt" | while read ktFile; do
+            if ! grep -q "import android.view.HapticFeedbackConstants" "$ktFile"; then
+              sed -i '1a import android.view.HapticFeedbackConstants' "$ktFile"
+            fi
+            if ! grep -q "import android.widget.LinearLayout" "$ktFile"; then
+              sed -i '1a import android.widget.LinearLayout' "$ktFile"
+            fi
+            if ! grep -q "import android.view.View" "$ktFile"; then
+              sed -i '1a import android.view.View' "$ktFile"
+            fi
+            sed -i 's/setView(([^)]*))/setView(\1 as android.view.View)/g' "$ktFile" || true
+            sed -i 's/as android.view.View as android.view.View/as android.view.View/g' "$ktFile" || true
+          done
+
+          # تصحيح أخطاء الـ XML وحذف خاصية android:dir الخاطئة
           find app/src/main/res/layout -name "*.xml" | while read xmlFile; do
             sed -i 's/android:dir="[^"]*"//g' "$xmlFile" || true
             sed -i 's/app:layout_bottomToBottomOf/layout_bottomToBottomOf/g' "$xmlFile" || true
             sed -i 's/layout_bottomToBottomOf/app:layout_constraintBottom_toBottomOf/g' "$xmlFile" || true
           done
 
-          # ضمان إضافة مكتبة constraintlayout إلى app/build.gradle إذا كانت مستخدمة في التصميم
+          # إضافة مكتبة constraintlayout إذا كانت مستخدمة
           if grep -rn "layout_constraint" app/src/main/res/layout/ 2>/dev/null; then
             if ! grep -q "constraintlayout" app/build.gradle 2>/dev/null; then
               sed -i "/dependencies {/a \    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'" app/build.gradle || true
             fi
           fi
 
-          # إعداد مجلدات الأيقونات وتوفير الأيقونة الدائرية ic_launcher_round
+          # إعداد مجلدات الأيقونات وتوفير ic_launcher و ic_launcher_round
           for d in mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi drawable; do
             mkdir -p "app/src/main/res/$d"
           done
@@ -66,7 +78,7 @@ jobs:
           done
           cp "$BASE_ICON" app/src/main/res/drawable/splash_logo.png || true
 
-          # تنظيف ملفات values
+          # تنظيف أي محتوى زائد في ملفات values
           if [ -d "app/src/main/res/values" ]; then
             for xmlfile in app/src/main/res/values/*.xml; do
               if [ -f "$xmlfile" ]; then
@@ -83,31 +95,6 @@ jobs:
           org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
           android.useAndroidX=true
           android.nonTransitiveRClass=true
-          EOF
-
-          cat << 'EOF' > settings.gradle
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-          include ':app'
-          EOF
-
-          cat << 'EOF' > build.gradle
-          plugins {
-              id 'com.android.application' version '8.2.2' apply false
-              id 'org.jetbrains.kotlin.android' version '1.9.22' apply false
-          }
           EOF
 
       - name: Compile and Assemble Android Packages
