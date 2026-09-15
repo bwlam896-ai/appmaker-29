@@ -1,0 +1,14 @@
+<resources>
+    <style name="Theme.DhikrApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#0D5C3A</item>
+        <item name="colorPrimaryVariant">#083C25</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#F59E0B</item>
+        <item name="colorSecondaryVariant">#D97706</item>
+        <item name="colorOnSecondary">#000000</item>
+        <item name="android:statusBarColor">#083C25</item>
+        <item name="android:windowBackground">#061E14</item>
+    </style>
+</resources>
+
+[ملform: app/src/main/res/layout/activity_main.xml]
