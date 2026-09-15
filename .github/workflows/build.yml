@@ -30,16 +30,29 @@ jobs:
         with:
           gradle-version: '8.2'
 
-      - name: Prepare Project Structure, Missing Resources & Round Icons
+      - name: Prepare Project Structure, Fix Layout XML & Attributes
         run: |
           rm -f preview.html || true
 
-          # إنشاء جميع مجلدات الأيقونات وتوفير كل من ic_launcher و ic_launcher_round
+          # تصحيح خطأ android:dir وحذف أي أخطاء وسمية في activity_main.xml
+          find app/src/main/res/layout -name "*.xml" | while read xmlFile; do
+            sed -i 's/android:dir="[^"]*"//g' "$xmlFile" || true
+            sed -i 's/app:layout_bottomToBottomOf/layout_bottomToBottomOf/g' "$xmlFile" || true
+            sed -i 's/layout_bottomToBottomOf/app:layout_constraintBottom_toBottomOf/g' "$xmlFile" || true
+          done
+
+          # ضمان إضافة مكتبة constraintlayout إلى app/build.gradle إذا كانت مستخدمة في التصميم
+          if grep -rn "layout_constraint" app/src/main/res/layout/ 2>/dev/null; then
+            if ! grep -q "constraintlayout" app/build.gradle 2>/dev/null; then
+              sed -i "/dependencies {/a \    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'" app/build.gradle || true
+            fi
+          fi
+
+          # إعداد مجلدات الأيقونات وتوفير الأيقونة الدائرية ic_launcher_round
           for d in mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi drawable; do
             mkdir -p "app/src/main/res/$d"
           done
 
-          # إنشاء أيقونة موحدة صالحة لتفادي عطل LinkApplicationAndroidResources
           if [ -f "app_icon.png" ] && [ -s "app_icon.png" ]; then
             BASE_ICON="app_icon.png"
           else
@@ -53,7 +66,7 @@ jobs:
           done
           cp "$BASE_ICON" app/src/main/res/drawable/splash_logo.png || true
 
-          # تنظيف أي شفرات زائدة في ملفات values
+          # تنظيف ملفات values
           if [ -d "app/src/main/res/values" ]; then
             for xmlfile in app/src/main/res/values/*.xml; do
               if [ -f "$xmlfile" ]; then
@@ -62,7 +75,6 @@ jobs:
             done
           fi
 
-          # إنشاء مفتاح التوقيع الرقمي الرسمي
           keytool -genkeypair -v -keystore release.keystore -alias appkey -keyalg RSA -keysize 2048 -validity 10000 -storepass appmaker123 -keypass appmaker123 -dname "CN=AppMaker, OU=Mobile, O=AppMaker, L=Algiers, S=Algiers, C=DZ"
           mkdir -p app
           cp release.keystore app/release.keystore || true
@@ -100,10 +112,7 @@ jobs:
 
       - name: Compile and Assemble Android Packages
         run: |
-          # تصريف حزمة APK أولاً
-          gradle assembleRelease -x lint -x test --stacktrace --no-daemon
-          # تصريف حزمة AAB
-          gradle bundleRelease -x lint -x test --stacktrace --no-daemon || true
+          gradle assembleRelease bundleRelease -x lint -x test --stacktrace --no-daemon
 
       - name: Sign Android Packages
         run: |
