@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#061E14"
+    android:dir="rtl">
+
+    <!-- Top Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#0D5C3A"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddDhikr"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="12dp"
+            android:backgroundTint="#F59E0B"
+            android:text="@string/add_dhikr"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:cornerRadius="8dp"
+            app:icon="@android:drawable/ic_input_add"
+            app:iconTint="#000000" />
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <!-- Category Tabs -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#0A422A"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:tabIndicatorColor="#F59E0B"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="#F59E0B"
+        app:tabTextColor="#A7F3D0">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_all" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_morning" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_evening" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_custom" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- Active Dhikr Display Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardDhikr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardBackgroundColor="#0D472B"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:strokeColor="#1F8A58"
+        app:strokeWidth="1dp"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvCategoryBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#083C25"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:text="عام"
+                android:textColor="#A7F3D0"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvDhikrText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:minLines="2"
+                android:text="سُبْحَانَ اللَّهِ وَبِحَمْدِهِ"
+                android:textColor="#FDE68A"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Circular Interactive Counter Button -->
+    <FrameLayout
+        android:id="@+id/counterContainer"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardDhikr">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            app:indicatorColor="#F59E0B"
+            app:indicatorSize="210dp"
+            app:trackColor="#0A422A"
+            app:trackThickness="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCount"
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:layout_gravity="center"
+            android:backgroundTint="#0D5C3A"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:cornerRadius="85dp"
+            app:strokeColor="#1F8A58"
+            app:strokeWidth="3dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="false"
+            android:focusable="false"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textColor="#FFFFFF"
+                android:textSize="44sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTarget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="المستهدف: 33"
+                android:textColor="#A7F3D0"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/tap_to_count"
+                android:textColor="#F59E0B"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Navigation / Control Actions -->
+    <LinearLayout
+        android:id="@+id/controlLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/counterContainer">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReset"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="@string/reset"
+            android:textColor="#A7F3D0"
+            app:strokeColor="#1F8A58" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPrev"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="4dp"
+            android:text="@string/prev"
+            android:textColor="#A7F3D0"
+            app:strokeColor="#1F8A58" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNext"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:text="@string/next"
+            android:textColor="#A7F3D0"
+            app:strokeColor="#1F8A58" />
+    </LinearLayout>
+
+    <!-- List of Athkar -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvDhikrList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        app:layout_bottomToBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/controlLayout"
+        tools:listitem="@android:layout/simple_list_item_2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
